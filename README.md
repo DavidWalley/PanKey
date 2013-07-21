@@ -9,3 +9,4 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-
 
 Open source so there is proof that there is no hanky pankey going on.
 
+Not finished yet - framework of IME, keyboard view and a popup view is done.
