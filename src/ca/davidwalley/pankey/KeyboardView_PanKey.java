@@ -1,9 +1,12 @@
-// ViewPanKey.java -                                                                            //                             [2013-06-28 davidwalley.ca F166]
+// KeyboardView_PanKey.java - Bulk of programming for Pan Key.                                  //                             [2013-06-28 davidwalley.ca F166]
+// (c) 2013 David C. Walley
+// This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+// To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/.
+
                                                                                                 //
 package ca.davidwalley.pankey;                                                                  //                             [2013-06-28 davidwalley.ca 6F19]
                                                                                                 //
 import android.util.*;                                                                          // For ease of debug logging.    [2013-06-28 davidwalley.ca 4FCD]
-                                                                                                //
                                                                                                 //
 public class /////////////////////////////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca 5389]
                                    KeyboardView_PanKey ///////////////////////////////////////////                             [2013-06-28 davidwalley.ca C886]
@@ -15,27 +18,27 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
 
  android.content.Context        p_context               = null;                                 //
                                                                                                 //
- public                         //////////////////////////////////////////////////////////////////
+ public                         ////////////////////////////////////////////////////////////////// Constructor
                                 KeyboardView_PanKey(//                                          //
-  android.content.Context        c                                                              //
+  android.content.Context        a_context                                                      //
  ,android.util.AttributeSet      a                                                              //
  ){                             //////////////////////////////////////////////////////////////////
-  super(c, a   );                                                                               //
+  super(a_context, a   );                                                                       //
   Log.d(sTAG,"KeyboardView_PanKey.KeyboardView_PanKey 1");
-  p_context = c;                                                                                // Call the parent class's constructor.    [2013-06-28 davidwalley.ca 08F6]
+  p_context = a_context;                                                                        // Call the parent class's constructor.    [2013-06-28 davidwalley.ca 08F6]
   p_SetupKeyboard();                                                                            // Initialize the keyboard layout arrays.
  }////////////////////////////////////////////////////////////////////////////////////////////////
                                                                                                 //
                                                                                                 //
- public                         //////////////////////////////////////////////////////////////////
+ public                         ////////////////////////////////////////////////////////////////// Constructor
                                 KeyboardView_PanKey(//                                          //
-  android.content.Context        c                                                              //
+  android.content.Context        a_context                                                      //
  ,android.util.AttributeSet      a                                                              //
  ,int                            d                                                              //
  ){                             //////////////////////////////////////////////////////////////////
-  super(c, a, d);                                                                               // Call the parent class's constructor.    [2013-06-28 davidwalley.ca 30DB]
+  super(a_context, a, d);                                                                       // Call the parent class's constructor.    [2013-06-28 davidwalley.ca 30DB]
   Log.d(sTAG,"KeyboardView_PanKey.KeyboardView_PanKey 2");
-  p_context = c;                                                                                //
+  p_context = a_context;                                                                        //
   p_SetupKeyboard();                                                                            // Initialize the keyboard layout arrays.
  }////////////////////////////////////////////////////////////////////////////////////////////////
                                                                                                 //
@@ -46,17 +49,12 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  private String                 sDEBUG3                 = "";                                   //
  private String                 sDEBUG4                 = "";                                   //
                                                                                                 //
- private final int              p_colorLEFT             = 0xff33FF33;                           //
- private final int              p_colorRIGHT            = 0xffFF6600;                           //
  private final int              p_colorHIGH             = 0xffFFFF00;                           //
  private final int              p_colorFORE             = 0xffFFFFFF;                           //
  private final int              p_colorDIM              = 0xff888888;                           //
- private int                    p_colorKEY              = p_colorRIGHT;                         //
                                                                                                 //
  private android.graphics.Paint   p_paint               = new android.graphics.Paint();         // General purpose paint object for drawing on screen.                            [2013-06-28 davidwalley.ca 710B]
                                                                                                 //
- private final float            p_dKEYaREAt_1           = 0.85f;                                // Copy of Top position of key area (MUST reflect what is set in an XML file).
-
  private int                    p_nKeyAreaL_px          = 0;                                    // Position on screen (left and
  private int                    p_nKeyAreaT_px          = 0;                                    // top) of keyboard display area.
  private float                  p_dKeyAreaW_px          = 100.f;                                // Width and
@@ -65,23 +63,11 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  private float                  p_dScreenH_px           = 0;                                    // height in pixels.                     [2013-06-28 davidwalley.ca A264]
 
  private boolean                p_bRightHanded          = false;                                // Remember if the user started as if right-handed or left-handed.
- private boolean                p_bBothSeenBefore       = false;                                // Remember if both fingers have been pressed at once.
 
  private float                  p_dTouchPanX_px         = -99.f;                                // Current screen co-    [2013-06-28 davidwalley.ca 0C26]
  private float                  p_dTouchPanY_px         = -99.f;                                // ordinates of the pan thumb (keyboard slider), as a fraction of the screen size.    [2013-06-28 davidwalley.ca 906E]
  private boolean                p_bPanTouching          = false;                                // Above values are only valid if this is set to true.
-
- private float                  p_dSpeedX               = 0.f;                 // Calculated Pan
- private float                  p_dSpeedY               = 0.f;                          // velocity.
- private float                  p_dTrigger              = 100.f;
-
- private long                   p_whenPan               = 0;                  // Time when last Pan velocity was calculated.
- private long                   p_whenCheckX            = 0;                            // Time when velocity checking should resume.
- private long                   p_whenCheckY            = 0;
- private float                  p_dPanAtX               = 0;
- private float                  p_dPanAtY               = 0;
- private int                    p_isPanWasX             = 0;                                  // -1,0, or 2 - Panning to do.
- private int                    p_isPanWasY             = 0;
+ private int                    p_isPanAt               = 2;
 
  private float                  p_dTouchKeyX_1          = -99.f;                                // Remember the current co-    [2013-06-28 davidwalley.ca 864E]
  private float                  p_dTouchKeyY_1          = -99.f;                                // ordinates of the right finger (key selector), as a fraction of the screen size.    [2013-06-28 davidwalley.ca 6A5E]
@@ -89,12 +75,7 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
 
  private int                    p_idTouchPan            = 0;                                    // Touch-point ID assigned to the pan thumb.                            [2013-06-28 davidwalley.ca 4E11]
  private int                    p_idTouchKey            = 0;                                    // Touch-point ID assigned to the pan thumb.
- private float                  p_dUpActionX            = 0.f;                                  // Remember co-
- private float                  p_dUpActionY            = 0.f;                                  // ordinates of last touch up event.
                                                                                                 //
- private int                    p_iRowSelected          = 0;                                    // Keyboard row and
- private int                    p_iColumnSelected       = 0;                                    // column that was selected (highlighted).
-                                                            /// Row,Column
  private int[][]                p_anAscii               = new int[9][12];                       // ASCII codes (for display) of keys on keyboard.
  private int[][]                p_anShift               = new int[9][12];                       // Shift and
  private int[][]                p_anCode                = new int[9][12];                       // keycode values for sending keystrokes to client editor application.
@@ -106,20 +87,16 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  android.widget.PopupWindow     p_popupwindow           = null;                                 // Create a new popup window which can display the contentView. The dimension of the window must be passed to this constructor.
 
  private final int              p_isINTRO               = 0;                                    // State before anything has been pressed.
- private final int              p_isCONFIRM             = 1;                                    // State showing buttons rather than intro message.
- private final int              p_isPANdOWN             = 2;                                    // First thumb pressed down and held.
- private final int              p_isBOTH                = 3;                                    // Thumb (pan) and finger (key) down and selecting key.
- private final int              p_isSPACE               = 4;                                    // Thumb up to select space bar.
- private final int              p_isKEY                 = 5;                                    // Finger up to select key.
+ private final int              p_isPANdOWN             = 1;                                    // First thumb pressed down and held.
+ private final int              p_isCONFIRM             = 2;                                    // Finger up to select key.
  private int                    p_isState               = p_isINTRO;                            // Remember the state, initially "intro".
 
 
  public void                    //////////////////////////////////////////////////////////////////
-                                CleanUp(//                                                 //
- ){                             ///////////////////////////////////////////////////////////////
+                                CleanUp(//                                                      // Clean up on shut down - in particular, dismiss any popup window.
+ ){                             //////////////////////////////////////////////////////////////////
   Log.d(sTAG,"KeyboardView_PanKey.CleanUp 1");
   if( null != p_popupwindow ){
-  Log.d(sTAG,"KeyboardView_PanKey.CleanUp 2 p_popupwindow.dismiss");
    p_popupwindow.dismiss(); p_popupwindow = null; p_view_popup = null;
   }//if
   p_isState = p_isINTRO;
@@ -136,7 +113,6 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  ){                             /////////////////////////////////////////////////////////////
   Log.d(sTAG,"KeyboardView_PanKey.onSizeChanged 1");
   if( null != p_popupwindow ){
-  Log.d(sTAG,"KeyboardView_PanKey.onSizeChanged 2 p_popupwindow.dismiss");
    p_popupwindow.dismiss(); p_popupwindow = null; p_view_popup = null;
   }//if
  }///onSizeChanged///////////////////////////////////////////////////////////////////////////
@@ -167,34 +143,29 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
   p_paint.setTextAlign(android.graphics.Paint.Align.CENTER);
   p_paint.setColor(p_colorFORE); p_paint.setTextSize(18);
 
-  p_NewKeyAreaSize();                                                      // Make sure the key area and
-  p_FindDisplaySize();            // entire device display size info is up-to-date, and update resources if there has been a change.
+  p_NewKeyAreaSize(); p_FindDisplaySize();                                                    // Make sure the key area and entire device display size info is up-to-date, and update resources if there has been a change.
 
   p_paint.setTextAlign(android.graphics.Paint.Align.LEFT); p_paint.setColor(0xffFF00FF);
   a_canvas.drawText(sDEBUG0 , 10.f , 20.f ,p_paint);
   a_canvas.drawText(sDEBUG1 , 10.f , 40.f ,p_paint);
   a_canvas.drawText(sDEBUG2 , 10.f , 60.f ,p_paint);
-  a_canvas.drawText(sDEBUG3 ,150.f , 20.f ,p_paint);
+  a_canvas.drawText(sDEBUG3 ,150.f , 80.f ,p_paint);
   a_canvas.drawText(sDEBUG4 ,150.f , 40.f ,p_paint);
 
   p_paint.setTextAlign(android.graphics.Paint.Align.CENTER); p_paint.setColor(0xff000000);
   if( p_isINTRO == p_isState ){
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 2 p_isINTRO");
    if( null != p_popupwindow ){
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 3 p_popupwindow.dismiss");
     p_popupwindow.dismiss(); p_view_popup  = null; p_popupwindow = null;
    }//if
    a_canvas.drawBitmap(p_bitmapFinger_L ,                          0.f ,0.f ,null);
    a_canvas.drawBitmap(p_bitmapFinger_R ,p_dKeyAreaW_px-p_dKeyAreaH_px ,0.f ,null);
-   a_canvas.drawText( "Press & hold a"  ,p_dKeyAreaW_px *0.5f ,p_dKeyAreaH_px *0.4f ,p_paint ); //                             [2013-06-28 davidwalley.ca C21A]
-   a_canvas.drawText( "print wih thumb" ,p_dKeyAreaW_px *0.5f ,p_dKeyAreaH_px *0.7f ,p_paint ); //                             [2013-06-28 davidwalley.ca C21A]
+   a_canvas.drawText( "Press & hold a print" ,p_dKeyAreaW_px *0.5f ,p_dKeyAreaH_px *0.4f ,p_paint ); //                             [2013-06-28 davidwalley.ca C21A]
+   a_canvas.drawText( "wih thumb. Slide up." ,p_dKeyAreaW_px *0.5f ,p_dKeyAreaH_px *0.7f ,p_paint ); //                             [2013-06-28 davidwalley.ca C21A]
  return;                                                                                        // We are done
   }//if                                                                                         // .
 
   if( p_isCONFIRM == p_isState ){
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 4 p_isCONFIRM");
    if( null != p_popupwindow ){
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 5 p_popupwindow.dismiss");
     p_popupwindow.dismiss(); p_view_popup  = null; p_popupwindow = null;
    }//if
    a_canvas.drawBitmap(p_bitmapFinger_L ,                          0.f ,0.f ,null);
@@ -204,12 +175,8 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  return;                                                                                        // We are done
   }//if                                                                                         // .
 
-  float                         dX_px    = (p_dTouchPanY_px -p_dKEYaREAt_1)*0.5f *p_dScreenH_px; // Calculate reduced (so scrolling does not move as much as finger movement) touch position relative to top of keyboard area.
-  float                         dY_px                   = 0.f;
-
   if( null == p_popupwindow ){
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 6 new View_Popup");
-   p_view_popup  = new View_Popup(p_context);
+   p_view_popup  = new View_Popup(this, p_context);
    p_popupwindow = new android.widget.PopupWindow(                                          // Create a new popup window which can display the contentView. The dimension of the window must be passed to this constructor.
     p_view_popup                                                                             // the popup's content.
    ,(int)p_dScreenW_px - 6                                                                // Width and
@@ -221,30 +188,8 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
    ,android.view.Gravity.CENTER ,0 ,0                                                     // gravity the gravity which controls the placement of the popup window, the popup's x location offset
    );
   }else{
-  Log.d(sTAG,"KeyboardView_PanKey.onDraw 7 p_view_popup.invalidate");
    p_view_popup.invalidate();
   }//if
-
-  if( p_isPANdOWN == p_isState ){
-   if( ! p_bRightHanded ){ p_paint.setTextAlign(android.graphics.Paint.Align.LEFT ); //
-   }else{                  p_paint.setTextAlign(android.graphics.Paint.Align.RIGHT); //
-   }//if
-   a_canvas.drawText("Hold & slide thumb up."  ,dX_px ,p_dKeyAreaH_px*0.35f +dY_px ,p_paint);  // display first instruction,
-
-   if( p_bRightHanded ){ p_paint.setTextAlign(android.graphics.Paint.Align.LEFT ); //
-   }else{                p_paint.setTextAlign(android.graphics.Paint.Align.RIGHT); //
-   }//if
-   a_canvas.drawText("Press & slide finger to" ,dX_px ,p_dKeyAreaH_px       +dY_px ,p_paint); // "
-   a_canvas.drawText("find key. Lift and tap." ,dX_px ,p_dKeyAreaH_px +20.f +dY_px ,p_paint); // "
-
-   if( p_bRightHanded ){
-    p_DrawArrow( a_canvas ,p_dKeyAreaW_px - 50.f ,p_dKeyAreaH_px +dY_px ,-1.5f ,1.5f ,p_colorKEY ,p_colorDIM);
-   }else{
-    p_DrawArrow( a_canvas ,                 50.f ,p_dKeyAreaH_px +dY_px , 1.5f ,1.5f ,p_colorKEY ,p_colorDIM);
-   }//if
-
- return;                                                                                        // We are done
-  }//if                                                                                         // .
 
   int                           iKeyColumn              = (int)Math.floor(4.f * p_dTouchKeyX_1);
   int                           iKeyRow                 = (int)Math.floor(6.f * p_dTouchKeyY_1);
@@ -253,7 +198,7 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
   int                           nAscii                  = 0;                                    // Short-term utility.
   boolean                       bInZone                 = false;
   for( int iColumn = 0; iColumn < 12; iColumn++ ){
-   bInZone = ( (int)p_dPanAtX - 1 == iColumn/4 );
+   bInZone = ( p_isPanAt - 1 == iColumn/4 );
    for(  int iRow    = 0; iRow    <  3; iRow++    ){
     if( !bInZone ){
      p_paint.setTextSize( 18); p_paint.setColor(p_colorDIM);
@@ -280,13 +225,38 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
     );
   }}//for iRow//for iColumn
 
-  p_DrawArrow( a_canvas
-  ,p_dKeyAreaW_px * (p_dTouchKeyX_1*4.f  +p_dPanAtX*4.f -2.5f)/14.f
-  ,p_dKeyAreaH_px * (p_dTouchKeyY_1*1.8f                +0.f )
-  , 1.f ,1.f  ,p_colorLEFT  ,p_colorDIM
-  );
   Log.d(sTAG,"KeyboardView_PanKey.onDraw 99");
  }///onDraw(){}///////////////////////////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca 8335]
+
+
+ public void                    //////////////////////////////////////////////////////////////
+                                DrawPopup(//                                                //
+  final android.graphics.Canvas  a_canvas                                                   // the canvas on which the background will be drawn.    [2013-06-28 davidwalley.ca 7C82]
+ ){                             //////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca 93A6]
+  p_paint.setTextSize(50); p_paint.setColor(0xccFFFFFF);
+  p_paint.setStyle(android.graphics.Paint.Style.STROKE);
+  p_paint.setStrokeWidth(2);
+  int                           nAscii                  = 0;
+  String                        s                       = "";
+  for( int iColumn = 0; iColumn < 4; iColumn++ ){
+   for(  int iRow  = 0; iRow    < 3; iRow++    ){
+    nAscii = p_anAscii[iRow][iColumn];
+    if(         0 <= nAscii ){ s = java.lang.Character.toString( (char)nAscii );
+    }else if(  -1 == nAscii ){ s = "??" ;    }else if(  -2 == nAscii ){ s = "esc";
+    }else if(  -3 == nAscii ){ s = "del";    }else if(  -4 == nAscii ){ s = "ins";
+    }else if(  -5 == nAscii ){ s = "tab";    }else if(  -6 == nAscii ){ s = "^^" ;
+    }else if(  -7 == nAscii ){ s = "<-" ;    }else if(  -8 == nAscii ){ s = ">>" ;
+    }else if(  -9 == nAscii ){ s = "vv" ;    }else{                     s = ".." ;
+    }//if
+    a_canvas.drawText(s
+    ,p_dKeyAreaW_px * ( 0.5f + iColumn )/4.f
+    ,p_dScreenH_px  * ( 1.5f + iRow    )/6.f
+    ,p_paint
+    );
+   }//for iRow
+  }//for iColumn
+  p_paint.setStyle(android.graphics.Paint.Style.FILL);
+ }//DrawPopup/////////////////////////////////////////////////////////////////////////////////
 
 
  @Override public boolean       //////////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca D88C]
@@ -311,19 +281,12 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
        || android.view.MotionEvent.ACTION_POINTER_UP == isActionOnly                            // or some secondary touch-point
       );                                                                                        // .
 
-sDEBUG0 = "action:"+ isActionOnly;
-sDEBUG1 = "p:"+(a_motionevent.getPressure()+"     ").substring(0,6)
-        +" s:"+(a_motionevent.getSize(    )+"     ").substring(0,6);
-
   float                         dNewX_1                 = 0.f;                                  // Want to remember the co-
   float                         dNewY_1                 = 0.f;                                  // ordinates
   int                           idNew                   = 0;                                    // and ID of the first unrecognized touch-point.
   boolean                       bNewSeen                = false;
   boolean                       bPanSeen                = false;                                // Remember if we find the left finger in the list of touch-points.                            [2013-06-28 davidwalley.ca C94B]
   boolean                       bKeySeen                = false;                                // Remember if we find the right finger in the list of touch-points.                             [2013-06-28 davidwalley.ca EE8D]
-
-  float                         dWasX_px                = 0.f;
-  float                         dWasY_px                = 0.f;
 
   int                           id;                                                             // Short-term utility for remmbering touch-point IDs (as opposed to pointer indexes).
 
@@ -333,15 +296,13 @@ sDEBUG1 = "p:"+(a_motionevent.getPressure()+"     ").substring(0,6)
   for( int i = a_motionevent.getPointerCount(); 0 < i; ){ i--;                                  // Check all active 'pointers' (fingers touching the screen).
    id = a_motionevent.getPointerId(i);                                                          // Convert the list index to a touch-point ID.
    if( bUpAction   &&   idActionsPointer == id ){                                               // If this touch-point is the one that has been lifted, then
-    p_dUpActionX = (a_motionevent.getX(i) +p_nKeyAreaL_px) / p_dScreenW_px;                     // remember the last touch point's
-    p_dUpActionY = (a_motionevent.getY(i) +p_nKeyAreaT_px) / p_dScreenH_px;                     // position.
   continue;                                                                                     // move on to the next touch-point in the list
    }//if                                                                                        // .
 
    if(       p_bPanTouching   &&   id == p_idTouchPan ){                                        // If this is the (touching) pan finger, then
     bPanSeen = true;                                                                            // remember we have seen the right finger in the list.     [2013-06-28 davidwalley.ca BB2F]
-    dWasX_px = p_dTouchPanX_px; p_dTouchPanX_px = a_motionevent.getX(i);                                                 // Get the new co-                            [2013-06-28 davidwalley.ca 97B7]
-    dWasY_px = p_dTouchPanY_px; p_dTouchPanY_px = a_motionevent.getY(i);                                                   // ordinates of the left finger.                            [2013-06-28 davidwalley.ca B9B1]
+    p_dTouchPanX_px = a_motionevent.getX(i);                                                 // Get the new co-                            [2013-06-28 davidwalley.ca 97B7]
+    p_dTouchPanY_px = a_motionevent.getY(i);                                                   // ordinates of the left finger.                            [2013-06-28 davidwalley.ca B9B1]
    }else if( p_bKeyTouching   &&   id == p_idTouchKey ){                                        // If this is the (touching) right finger, then
     bKeySeen = true;                                                                            // remember we have seen the right finger in the list.     [2013-06-28 davidwalley.ca BB2F]
     p_dTouchKeyX_1 = (a_motionevent.getX(i) +p_nKeyAreaL_px) / p_dScreenW_px;                   // Calculate the new co-                                  [2013-06-28 davidwalley.ca 0BC3]
@@ -355,130 +316,108 @@ sDEBUG1 = "p:"+(a_motionevent.getPressure()+"     ").substring(0,6)
   p_bPanTouching = bPanSeen;                                                                    // Remember if the left finger is touching the screen.
   p_bKeyTouching = bKeySeen;                                                                    // Remember if the right finger is touching the screen.
 
-  if(  p_bPanTouching ){                                                                        // If Pan finger is touching...
-    bPanSeen = true;                                                                            // remember we have seen the left finger in the list.                            [2013-06-28 davidwalley.ca BD68]
-    float                       took                    =
-        ( (float)(System.currentTimeMillis() - p_whenPan) )/100.f;
-    float                       dTRIGGERmAX             = 60.f;
+  if( p_bPanTouching ){                                                                        // If Pan finger is touching...
+   ///    +---------------------------------------+  \
+   ///    |    1    |    2    |    3    |    4    |  |
+   ///    +---------------------------------------+  |
+   ///    |    2    |         |         |         |  |_ Key presses (handled elsewhere).
+   ///    +---------------------------------------+  |
+   ///    |    3    |         |         |         |  |
+   ///    +---------------------------------------+  |
+   ///    | Keyboard                              |  /
+   ///    | pan to   /                Space bar   |
+   ///    | right.  /        /                    |
+   ///    | = 1   / Center /                      |
+   ///    |      / = 2  /                         |
+   ///    |    /     /                            |
+   ///    |   /   /   Keyboard                    |
+   ///    | /  /  pan to left.                    |
+   ///    |//    = 3                              |
+   ///    +---------------------------------------+
+   ///    |   Keyboard area also accepts press?   |
+   ///    +---------------------------------------+
+   if( 0.f < p_dTouchPanY_px ){ p_isPanAt = 3;                                                // If in key area, then
+   }else{
+    float                       dRun_px                 =
+        ( p_bRightHanded )?p_dTouchPanX_px :(p_dScreenH_px - p_dTouchPanX_px);              //
+    if( dRun_px < 0.01f ){      p_isPanAt = 1;                                              // Avoid division by zero by reporting zone 1.
+    }else{
+     float                      dSlope                  = -p_dTouchPanY_px / dRun_px;       // Calculate the slope.
+     if(       dSlope < 0.5f ){ p_isPanAt = 3;
+     }else if( dSlope < 1.5f ){ p_isPanAt = 2;
+     }else{                     p_isPanAt = 1;
+   }}}//if//if//if                                                                          // .
+   sDEBUG0 = "P:"+ p_isPanAt;
 
-    if( 0 < took   &&   p_bPanTouching ){
-     p_whenPan = System.currentTimeMillis();
-     p_dSpeedX = (p_dTouchPanX_px - dWasX_px)/took;
-     p_dSpeedY = (p_dTouchPanY_px - dWasY_px)/took;
-//*///
-     if(        p_dSpeedX < -p_dTrigger ){  p_dTrigger = dTRIGGERmAX;
-      if(       p_dSpeedY < -p_dTrigger ){
-       if( p_dSpeedX <  p_dSpeedY ){  p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
-       else{                          p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // -
-      }else if( p_dTrigger < p_dSpeedY  ){
-       if( p_dSpeedX < -p_dSpeedY ){  p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
-       else{                          p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // +
-      }else{                          p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
-     }else if(  p_dTrigger < p_dSpeedX  ){  p_dTrigger = dTRIGGERmAX;
-      if(       p_dSpeedY < -p_dTrigger ){
-       if( p_dSpeedX < -p_dSpeedY ){  p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // -
-       else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
-      }else if( p_dTrigger < p_dSpeedY  ){
-       if( p_dSpeedX <  p_dSpeedY ){  p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // +
-       else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
-      }else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
-     }else if(  p_dSpeedY < -p_dTrigger ){  p_dTrigger = dTRIGGERmAX;
-                                      p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger;   // -
-     }else if(  p_dTrigger < p_dSpeedY  ){  p_dTrigger = dTRIGGERmAX;
-                                      p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger;   // +
-     }else{
-      p_dTrigger *= Math.exp(-.1f*took); if( p_dTrigger < 2.f ){ p_dTrigger = 2.f; }
-     }//if
-//*///
+   if( ! p_bKeyTouching ){                                                                  // but KEY finger is not, then
+    if( bNewSeen ){                                                                         // but a new touch-point was seen, then PAN key is returning, so...
+     p_bKeyTouching = true; p_idTouchKey = idNew;                                           // Assign the new touch-point to the KEY finger
+     p_dTouchKeyX_1 = dNewX_1; p_dTouchKeyY_1 = dNewY_1;                                    // and remember its position.
+   }}//if//if                                                                               // .
 
+  }else{                                                                                    // But if the PAN key was not touching,
+   if( bNewSeen ){                                                                          // If a new touch-point was seen, then
+    p_bPanTouching = true; p_idTouchPan = idNew;                                            // Assign the new touch-point to the PAN finger
+    p_dTouchPanX_px = dNewX_1; p_dTouchPanY_px = dNewY_1;                                   // and remember its position.
+    p_bRightHanded = ( p_dTouchPanX_px < 0.5f );                                            // FIRST TOUCH. Remember if left or right handed
+  }}//if//if                                                                                // .
+                                                                                            //
+  if( p_bPanTouching   ||   p_bKeyTouching ){                                               // if something is touching display, then
+   p_isState = p_isPANdOWN;
+  }else{                                                                                    // but if the right thumb is down, then
+   if( p_isINTRO != p_isState ){ p_isState = p_isCONFIRM; }                                 // Reset the state to just starting (with intro message only if nothing has been done yet).
+  }//if                                                                                     // .
 
-     Log.d( "raw",","+ p_whenPan +", "+ p_dTrigger +", "+ p_dSpeedX +", "+ p_dSpeedY  +", "+ p_dPanAtX  +", "+ p_dPanAtY );
-    }//if 0 <
-
-sDEBUG2 = "v:" +(p_dSpeedX   +"     ").substring(0,6)
-          +" " +(p_dSpeedY   +"     ").substring(0,6);
-sDEBUG3 = "at:"+(p_dPanAtX   +"     ").substring(0,6)
-          +" " +(p_dPanAtY   +"     ").substring(0,6);
-
-   if( ! p_bKeyTouching ){                                                                      // but Key finger is not, then
-    if( bNewSeen ){                                                                             // but a new touch-point was seen, then PAN key is returning, so...
-     p_bKeyTouching = true; p_idTouchKey = idNew;                                               // Assign the new touch-point to the KEY finger
-     p_dTouchKeyX_1 = dNewX_1; p_dTouchKeyY_1 = dNewY_1;                                        // and remember its position.
-   }}//if//if                                                                              // .
-
-  }else{                                                                                        // But if the PAN key was not touching,
-   if( bNewSeen ){                                                                             // If a new touch-point was seen, then
-    p_bPanTouching = true; p_idTouchPan = idNew;                                               // Assign the new touch-point to the PAN finger
-    p_dTouchPanX_px = dNewX_1; p_dTouchPanY_px = dNewY_1;                                        // and remember its position.
-    p_bRightHanded = ( p_dTouchPanX_px < 0.5f );                                                // FIRST TOUCH. Remember if left or right handed
-   }//if
-  }//if                                                                                    // .
-                                                                                                //
-  if(  ! p_bPanTouching ){                                                                      // If the left thumb is not on screen, then    [2013-06-28 davidwalley.ca C370]
-   if( ! p_bKeyTouching ){                                                                      // if nothing is touching display, then
-    if( p_isINTRO != p_isState ){ p_isState = p_isCONFIRM; }                                    // Reset the state to just starting (with intro message only if nothing has been done yet).
-   }else{                                                                                       // but if the right thumb is down, then
-    if( p_isINTRO == p_isState   ||   p_isCONFIRM == p_isState ){ p_isState = p_isPANdOWN; }
-    if( p_isPANdOWN != p_isState ){ p_isState = p_isSPACE; }
-   }//if
-  }else{                                                                                        // But if left thumb is pressed down
-   if( ! p_bKeyTouching ){                                                                      // but the right is not, then
-    if( p_isINTRO == p_isState   ||   p_isCONFIRM == p_isState ){ p_isState = p_isPANdOWN; }
-    if( p_isPANdOWN != p_isState ){ p_isState = p_isKEY;   }
-   }else{                                                                                       // But if both are down, then
-    p_isState = p_isBOTH;                                                                       // remember this
-  }}//if//if                                                                                    // .
-
-  invalidate();                                                                                 // Schedules a repaint.        [2013-06-28 davidwalley.ca 38DD]
- return true;                                                                                   // Report we have handled this event, and we are done.
- }///onTouchEvent/////////////////////////////////////////////////////////////////////////////////
+  invalidate();                                                                             // Schedule a repaint.        [2013-06-28 davidwalley.ca 38DD]
+ return true;                                                                               // Report we have handled this event, and we are done.
+ }///onTouchEvent/////////////////////////////////////////////////////////////////////////////
 
 
- private void                   //////////////////////////////////////////////////////////////////
-                                p_FindDisplaySize(//                                            // Find and remember the size of the entire device display.
- ){                             //////////////////////////////////////////////////////////////////
-  DisplayMetrics                displaymetrics          = getResources().getDisplayMetrics();   // Get info about              [2013-06-28 davidwalley.ca 0EEF]
-  p_dScreenW_px = displaymetrics.widthPixels;                                                   // the size of the full display screen.    [2013-06-28 davidwalley.ca 5566]
-  p_dScreenH_px = displaymetrics.heightPixels;                                                  // Android does not get this exactly right, but it is fairly close (because of status bar).    [2013-06-28 davidwalley.ca DD63]
- }///p_FindDisplaySize////////////////////////////////////////////////////////////////////////////
+ private void                   //////////////////////////////////////////////////////////////
+                                p_FindDisplaySize(//                                        // Find and remember the size of the entire device display.
+ ){                             //////////////////////////////////////////////////////////////
+  DisplayMetrics                displaymetrics        = getResources().getDisplayMetrics(); // Get info about              [2013-06-28 davidwalley.ca 0EEF]
+  p_dScreenW_px = displaymetrics.widthPixels;                                               // the size of the full display screen.    [2013-06-28 davidwalley.ca 5566]
+  p_dScreenH_px = displaymetrics.heightPixels;                                              // Android does not get this exactly right, but it is fairly close (because of status bar).    [2013-06-28 davidwalley.ca DD63]
+ }///p_FindDisplaySize////////////////////////////////////////////////////////////////////////
 
 
- private void                   //////////////////////////////////////////////////////////////////
-                                p_NewKeyAreaSize(//                                             // Get size of keyboard area, and update resources if there has been a change.
- ){                             //////////////////////////////////////////////////////////////////
-  float                         dW_px                   = getWidth( );                         // Get the width and
-  float                         dH_px                   = getHeight();                         // height of this (the keyboard) area.
+ private void                   //////////////////////////////////////////////////////////////
+                                p_NewKeyAreaSize(//                                         // Get size of keyboard area, and update resources if there has been a change.
+ ){                             //////////////////////////////////////////////////////////////
+  float                         dW_px                   = getWidth( );                      // Get the width and
+  float                         dH_px                   = getHeight();                      // height of this (the keyboard) area.
 
-  if( dW_px == p_dKeyAreaW_px   &&   dH_px == p_dKeyAreaH_px ){                              // If no change then
- return;                                                                                      // exit gracefully
-  }//if                                                                                         // .
+  if( dW_px == p_dKeyAreaW_px   &&   dH_px == p_dKeyAreaH_px ){                             // If no change then
+ return;                                                                                    // exit gracefully
+  }//if                                                                                     // .
 
-  int                           an[]                    = {0,0};                                // Create a buffer for receiving co-ordinates.    [2013-06-28 davidwalley.ca 92CB 2013-06-28 davidwalley.ca]
-  getLocationOnScreen(an);                                                                      // Get the top-left position of this keyboard section within the entire screen    [2013-06-28 davidwalley.ca 4942 2013-06-28 davidwalley.ca]
-  p_nKeyAreaL_px = an[0]; p_nKeyAreaT_px = an[1];                                               // and remember them in a more obvious format.
+  int                           an[]                    = {0,0};                            // Create a buffer for receiving co-ordinates.    [2013-06-28 davidwalley.ca 92CB 2013-06-28 davidwalley.ca]
+  getLocationOnScreen(an);                                                                  // Get the top-left position of this keyboard section within the entire screen    [2013-06-28 davidwalley.ca 4942 2013-06-28 davidwalley.ca]
+  p_nKeyAreaL_px = an[0]; p_nKeyAreaT_px = an[1];                                           // and remember them in a more obvious format.
   p_dKeyAreaW_px = dW_px; p_dKeyAreaH_px = dH_px;
 
   p_bitmapFinger_L = p_bitmapResized(dH_px ,dH_px ,R.drawable.fingerprint_l);
   p_bitmapFinger_R = p_bitmapResized(dH_px ,dH_px ,R.drawable.fingerprint_r);
- }///p_NewKeyAreaSize/////////////////////////////////////////////////////////////////////////////
+ }///p_NewKeyAreaSize/////////////////////////////////////////////////////////////////////////
 
 
- void                           //////////////////////////////////////////////////////////////////
-                                p_SetupKeyboard(//                                              // Translate a keyboard layout map to an array of critical info (somewhat inefficient, so done once on startup).
- ){                             //////////////////////////////////////////////////////////////////
+ void                           //////////////////////////////////////////////////////////////
+                                p_SetupKeyboard(//                                          // Translate a keyboard layout map to an array of critical info (somewhat inefficient, so done once on startup).
+ ){                             //////////////////////////////////////////////////////////////
   final String[][]              sLayout                 = {
   ///  0    1    2       3     4    5          6     7    8       9     A     B
-   { "esc","Q" ,"W"    ,"E"  ,"R" ,"T"       ,"Y"  ,"U" ,"I"    ,"O"  ,"P"  ,"|"  }             //
-  ,{ "~"  ,"A" ,"S"    ,"D"  ,"F" ,"G"       ,"H"  ,"J" ,"K"    ,"L"  ,":"  ,"qut"}             //
-  ,{ "`"  ,"Z" ,"X"    ,"C"  ,"V" ,"B"       ,"N"  ,"M" ,"<"    ,">"  ,"?"  ,"   "}             //
-                                                                                                //
-  ,{ "tab","{" ,"}"    ,"   ","[" ,"]"       ,"   ","+ ","="    ,"ins","del","   "}             //
-  ,{ "^^" ,"!" ,"@"    ,"#"  ,"$" ,"%"       ,"^"  ,"&" ,"*"    ,"("  ,")"  ,"_"  }             //
-  ,{ "<<" ,"1" ,"2"    ,"3"  ,"4" ,"5"       ,"6"  ,"7" ,"8"    ,"9"  ,"0"  ,"-"  }             //
-                                                                                                //
-  ,{ ">>" ,"q" ,"w"    ,"e"  ,"r" ,"t"       ,"y"  ,"u" ,"i"    ,"o"  ,"p"  ,"\\" }             //
-  ,{ "vv" ,"a" ,"s"    ,"d"  ,"f" ,"g"       ,"h"  ,"j" ,"k"    ,"l"  ,";"  ,"'"  }             //
-  ,{ "   ","z" ,"x"    ,"c"  ,"v" ,"b"       ,"n"  ,"m" ,","    ,"."  ,"/"  ,"   "}             //
+   { "esc","Q" ,"W"    ,"E"  ,"R" ,"T"       ,"Y"  ,"U" ,"I"    ,"O"  ,"P"  ,"|"  }         //
+  ,{ "~"  ,"A" ,"S"    ,"D"  ,"F" ,"G"       ,"H"  ,"J" ,"K"    ,"L"  ,":"  ,"qut"}         //
+  ,{ "`"  ,"Z" ,"X"    ,"C"  ,"V" ,"B"       ,"N"  ,"M" ,"<"    ,">"  ,"?"  ,"   "}         //
+                                                                                            //
+  ,{ "tab","{" ,"}"    ,"   ","[" ,"]"       ,"   ","+ ","="    ,"ins","del","   "}         //
+  ,{ "^^" ,"!" ,"@"    ,"#"  ,"$" ,"%"       ,"^"  ,"&" ,"*"    ,"("  ,")"  ,"_"  }         //
+  ,{ "<<" ,"1" ,"2"    ,"3"  ,"4" ,"5"       ,"6"  ,"7" ,"8"    ,"9"  ,"0"  ,"-"  }         //
+                                                                                            //
+  ,{ ">>" ,"q" ,"w"    ,"e"  ,"r" ,"t"       ,"y"  ,"u" ,"i"    ,"o"  ,"p"  ,"\\" }         //
+  ,{ "vv" ,"a" ,"s"    ,"d"  ,"f" ,"g"       ,"h"  ,"j" ,"k"    ,"l"  ,";"  ,"'"  }         //
+  ,{ "   ","z" ,"x"    ,"c"  ,"v" ,"b"       ,"n"  ,"m" ,","    ,"."  ,"/"  ,"   "}         //
   };
   //   ??? bak ins
   String                        s;
@@ -620,54 +559,6 @@ sDEBUG3 = "at:"+(p_dPanAtX   +"     ").substring(0,6)
                                                                                                 //
                                                                                                 //
  private void                   //////////////////////////////////////////////////////////////////
-                                p_DrawArrow(//                                                  //
-  final android.graphics.Canvas  a_canvas                                                       // the canvas on which the background will be drawn.    [2013-06-28 davidwalley.ca 7C82]
- ,final float                    a_dX_px                                                        //
- ,final float                    a_dY_px                                                        //
- ,final float                    a_dScaleX
- ,final float                    a_dScaleY
- ,final int                      a_colorFill
- ,final int                      a_colorStroke
- ){                             //////////////////////////////////////////////////////////////////
-  android.graphics.Path         path = new android.graphics.Path();                             // we will draw
-  ///     0 (0,0) x                                                                             // an arrow (like a mouse pointer)...
-  ///     2       @ @@                                                                          //
-  ///     4       @   @@                                                                        //
-  ///     6       @     @@                                                                      //
-  ///     8       @       @@                                                                    //
-  ///    10       @         @@                                                                  //
-  ///    12       @           @@                                                                //
-  ///    14       @             @@                                                              //
-  ///    16       @      (10,18)  @@                                                            //
-  ///    18       @ (6,19)  x@@@@@@@x (18,18)                                                   //
-  ///    20       @    @x   @                                                                   //
-  ///    22       @ @@@  @   @                                                                  //
-  ///    24       x@      @   @                                                                 //
-  ///    26     (0,24)    @    @                                                                //
-  ///    28                @    @                                                               //
-  ///    30                 @  @@x (15,30)                                                      //
-  ///    32          (10,32)x@@                                                                 //
-  ///             0123456789012345678                                                           //
-  path.moveTo(a_dX_px                   ,                 a_dY_px);
-  path.lineTo(a_dX_px                   ,24.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px + a_dScaleX*  6.f ,19.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px + a_dScaleX* 10.f ,32.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px + a_dScaleX* 15.f ,30.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px + a_dScaleX* 10.f ,18.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px + a_dScaleX* 18.f ,18.f *a_dScaleY +a_dY_px);
-  path.lineTo(a_dX_px                   ,                 a_dY_px);
-
-  p_paint.setStyle(android.graphics.Paint.Style.FILL  );                                        //
-  p_paint.setColor(a_colorFill);
-  a_canvas.drawPath(path ,p_paint);
-
-  p_paint.setStyle(android.graphics.Paint.Style.STROKE);                                        //
-  p_paint.setColor(a_colorStroke);
-  a_canvas.drawPath(path ,p_paint);                                                             //
- }///p_DrawArrow//////////////////////////////////////////////////////////////////////////////////
-
-
- private void                   //////////////////////////////////////////////////////////////////
                                 p_SendToUserApp(//                                              // Helper to send a key down / key up pair to the client editor application.
   final int                      a_iColumn                                                      //
  ,final int                      a_iRow                                                         //
@@ -677,7 +568,6 @@ sDEBUG3 = "at:"+(p_dPanAtX   +"     ").substring(0,6)
   ,p_anShift[a_iRow][a_iColumn]                                                                 // 0 = normal, 1 = shifted, 2 = modifier, 4 = custom
   );                                                                                            //
  }///p_SendToUserApp//////////////////////////////////////////////////////////////////////////////
-
 
 }/// class KeyboardView_PanKey////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -692,29 +582,19 @@ extends            android.view.View ///////////////////////////////////////////
                                                                                                 //
  private static final String    sTAG                    = "PanKey";                         // For logging.
 
+ private KeyboardView_PanKey    p_keyboardview_pankeyMom = null;
+
  public                         //////////////////////////////////////////////////////////////////
                                 View_Popup(//                                                   //
-  android.content.Context        a_context                                                      //
+  KeyboardView_PanKey            a_keyboardview_pankeyMom
+ ,android.content.Context        a_context                                                      //
  ){                             //////////////////////////////////////////////////////////////////
   super(a_context);                                                                             //
   Log.d(sTAG,"View_Popup.View_Popup 1 Construct");
+  p_keyboardview_pankeyMom = a_keyboardview_pankeyMom;
  }////////////////////////////////////////////////////////////////////////////////////////////////
                                                                                                 //
                                                                                                 //
-/*///
- public void                    //////////////////////////////////////////////////////////////////
-                                onLayout(//                                                     // Called from layout when this view should assign a size and position to each of its children.
-  boolean                        a_bChanged                                                     //
- ,int                            a_nL                                                           //
- ,int                            a_nT                                                           //
- ,int                            a_nR                                                           //
- ,int                            a_nB                                                           //
- ){                             //////////////////////////////////////////////////////////////////
-                                                                                                //
- }//onLayout//////////////////////////////////////////////////////////////////////////////////////
-//*///
-
-
  private android.graphics.Paint   p_paint               = new android.graphics.Paint();         // General purpose paint object for drawing on screen.                            [2013-06-28 davidwalley.ca 710B]
                                                                                                 //
  public void                    //////////////////////////////////////////////////////////////////
@@ -722,43 +602,7 @@ extends            android.view.View ///////////////////////////////////////////
   android.graphics.Canvas        a_canvas                                                       //
  ){                             //////////////////////////////////////////////////////////////////
   Log.d(sTAG,"View_Popup.onDraw 1");
-  float                         dW_px                   = (float)getWidth( );
-  float                         dH_px                   = (float)getHeight();
-  float                         dH1                     = dH_px*0.167f;
-  float                         dH2                     = dH_px*0.333f;
-  float                         dH3                     = dH_px*0.500f;
-  float                         dW1                     = dW_px*0.25f;
-  float                         dW2                     = dW_px*0.50f;
-  float                         dW3                     = dW_px*0.75f;
-
-  long                          when                    = System.currentTimeMillis();
-  int                           color1                  = 0xffFF8800;
-  int                           color2                  = 0xff00FF00;
-  switch( (int)when % 3 ){
-  case       0: color1 = 0xff8800FF; color2 = 0xff88FF55;
-  break;case 1: color1 = 0xff88FF66; color2 = 0xffF55F88;
-  }//switch
-
-  p_paint.setColor(color1);
-  a_canvas.drawLine(0.f ,dH1   ,dW_px ,dH1   ,p_paint);
-  a_canvas.drawLine(0.f ,dH2   ,dW_px ,dH2   ,p_paint);
-  a_canvas.drawLine(0.f ,dH3   ,dW_px ,dH3   ,p_paint);
-
-  a_canvas.drawLine(dW1 ,0.f   ,dW1   ,dH3   ,p_paint);
-  a_canvas.drawLine(dW2 ,0.f   ,dW2   ,dH3   ,p_paint);
-  a_canvas.drawLine(dW3 ,0.f   ,dW3   ,dH3   ,p_paint);
-
-  dH1 += 1.f; dH2 += 1.f; dH3 += 1.f;
-  dW1 += 1.f; dW2 += 1.f; dW3 += 1.f;
-
-  p_paint.setColor(color2);
-  a_canvas.drawLine(0.f ,dH1   ,dW_px ,dH1   ,p_paint);
-  a_canvas.drawLine(0.f ,dH2   ,dW_px ,dH2   ,p_paint);
-  a_canvas.drawLine(0.f ,dH3   ,dW_px ,dH3   ,p_paint);
-
-  a_canvas.drawLine(dW1 ,0.f   ,dW1   ,dH3   ,p_paint);
-  a_canvas.drawLine(dW2 ,0.f   ,dW2   ,dH3   ,p_paint);
-  a_canvas.drawLine(dW3 ,0.f   ,dW3   ,dH3   ,p_paint);
+  p_keyboardview_pankeyMom.DrawPopup(a_canvas);
  }//onDraw////////////////////////////////////////////////////////////////////////////////////////
                                                                                                 //
 }//class View_Popup///////////////////////////////////////////////////////////////////////////////
