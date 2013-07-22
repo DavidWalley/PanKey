@@ -1,4 +1,7 @@
 // PanKey.java - Main class for custom user input service, replacing stock keyboard.
+// (c) 2013 David C. Walley
+// This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
+// To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/.
 
 package ca.davidwalley.pankey;                                                              // This code is part of a package created by David Walley, owner of davidwalley.ca.
 

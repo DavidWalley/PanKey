@@ -253,8 +253,7 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
     ,p_dScreenH_px  * ( 1.5f + iRow    )/6.f
     ,p_paint
     );
-   }//for iRow
-  }//for iColumn
+  }}//for iRow//for iColumn
   p_paint.setStyle(android.graphics.Paint.Style.FILL);
  }//DrawPopup/////////////////////////////////////////////////////////////////////////////////
 
