@@ -53,3 +53,6 @@ proguard/
 
 # PDT-specific
 .buildpath
+
+# TextPad
+*.tws
