@@ -67,14 +67,22 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  private boolean                p_bRightHanded          = false;                                // Remember if the user started as if right-handed or left-handed.
  private boolean                p_bBothSeenBefore       = false;                                // Remember if both fingers have been pressed at once.
 
- private float                  p_dTouchPanX_1          = -99.f;                                // Current screen co-    [2013-06-28 davidwalley.ca 0C26]
- private float                  p_dTouchPanY_1          = -99.f;                                // ordinates of the pan thumb (keyboard slider), as a fraction of the screen size.    [2013-06-28 davidwalley.ca 906E]
+ private float                  p_dTouchPanX_px         = -99.f;                                // Current screen co-    [2013-06-28 davidwalley.ca 0C26]
+ private float                  p_dTouchPanY_px         = -99.f;                                // ordinates of the pan thumb (keyboard slider), as a fraction of the screen size.    [2013-06-28 davidwalley.ca 906E]
  private boolean                p_bPanTouching          = false;                                // Above values are only valid if this is set to true.
 
- private float                  p_dVelocityX            = 0.f;          // Calculated Pan
- private float                  p_dVelocityY            = 0.f;              // velocity.
- private long                   p_whenPan               = 0;        // Time when last Pan velocity was calculated.
-                                                                                                //
+ private float                  p_dSpeedX               = 0.f;                 // Calculated Pan
+ private float                  p_dSpeedY               = 0.f;                          // velocity.
+ private float                  p_dTrigger              = 100.f;
+
+ private long                   p_whenPan               = 0;                  // Time when last Pan velocity was calculated.
+ private long                   p_whenCheckX            = 0;                            // Time when velocity checking should resume.
+ private long                   p_whenCheckY            = 0;
+ private float                  p_dPanAtX               = 0;
+ private float                  p_dPanAtY               = 0;
+ private int                    p_isPanWasX             = 0;                                  // -1,0, or 2 - Panning to do.
+ private int                    p_isPanWasY             = 0;
+
  private float                  p_dTouchKeyX_1          = -99.f;                                // Remember the current co-    [2013-06-28 davidwalley.ca 864E]
  private float                  p_dTouchKeyY_1          = -99.f;                                // ordinates of the right finger (key selector), as a fraction of the screen size.    [2013-06-28 davidwalley.ca 6A5E]
  private boolean                p_bKeyTouching          = false;                                // Above values are only valid if this is set to true.
@@ -159,7 +167,8 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
   p_paint.setTextAlign(android.graphics.Paint.Align.CENTER);
   p_paint.setColor(p_colorFORE); p_paint.setTextSize(18);
 
-  p_NewKeyAreaSize(); p_FindDisplaySize();                                                   // Make sure the key area and entire device display size info is up-to-date, and update resources if there has been a change.
+  p_NewKeyAreaSize();                                                      // Make sure the key area and
+  p_FindDisplaySize();            // entire device display size info is up-to-date, and update resources if there has been a change.
 
   p_paint.setTextAlign(android.graphics.Paint.Align.LEFT); p_paint.setColor(0xffFF00FF);
   a_canvas.drawText(sDEBUG0 , 10.f , 20.f ,p_paint);
@@ -195,7 +204,7 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
  return;                                                                                        // We are done
   }//if                                                                                         // .
 
-  float                         dX_px    = (p_dTouchPanY_1 -p_dKEYaREAt_1)*0.5f *p_dScreenH_px; // Calculate reduced (so scrolling does not move as much as finger movement) touch position relative to top of keyboard area.
+  float                         dX_px    = (p_dTouchPanY_px -p_dKEYaREAt_1)*0.5f *p_dScreenH_px; // Calculate reduced (so scrolling does not move as much as finger movement) touch position relative to top of keyboard area.
   float                         dY_px                   = 0.f;
 
   if( null == p_popupwindow ){
@@ -244,7 +253,7 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
   int                           nAscii                  = 0;                                    // Short-term utility.
   boolean                       bInZone                 = false;
   for( int iColumn = 0; iColumn < 12; iColumn++ ){
-   bInZone = ( p_iPanAtX - 1 == iColumn/4 );
+   bInZone = ( (int)p_dPanAtX - 1 == iColumn/4 );
    for(  int iRow    = 0; iRow    <  3; iRow++    ){
     if( !bInZone ){
      p_paint.setTextSize( 18); p_paint.setColor(p_colorDIM);
@@ -272,20 +281,12 @@ extends android.inputmethodservice.KeyboardView ////////////////////////////////
   }}//for iRow//for iColumn
 
   p_DrawArrow( a_canvas
-  ,p_dKeyAreaW_px * (p_dTouchKeyX_1*4.f  +p_iPanAtX*4.f -2.5f)/14.f
+  ,p_dKeyAreaW_px * (p_dTouchKeyX_1*4.f  +p_dPanAtX*4.f -2.5f)/14.f
   ,p_dKeyAreaH_px * (p_dTouchKeyY_1*1.8f                +0.f )
   , 1.f ,1.f  ,p_colorLEFT  ,p_colorDIM
   );
   Log.d(sTAG,"KeyboardView_PanKey.onDraw 99");
  }///onDraw(){}///////////////////////////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca 8335]
-
-
- private long                   p_whenCheckX            = 0;
- private long                   p_whenCheckY            = 0;
- private int                    p_iPanAtX               = 0;
- private int                    p_iPanAtY               = 0;
- private int                    p_isPanWasX             = 0;
- private int                    p_isPanWasY             = 0;
 
 
  @Override public boolean       //////////////////////////////////////////////////////////////////                             [2013-06-28 davidwalley.ca D88C]
@@ -321,6 +322,9 @@ sDEBUG1 = "p:"+(a_motionevent.getPressure()+"     ").substring(0,6)
   boolean                       bPanSeen                = false;                                // Remember if we find the left finger in the list of touch-points.                            [2013-06-28 davidwalley.ca C94B]
   boolean                       bKeySeen                = false;                                // Remember if we find the right finger in the list of touch-points.                             [2013-06-28 davidwalley.ca EE8D]
 
+  float                         dWasX_px                = 0.f;
+  float                         dWasY_px                = 0.f;
+
   int                           id;                                                             // Short-term utility for remmbering touch-point IDs (as opposed to pointer indexes).
 
   p_FindDisplaySize();                                                                          // Make sure we have an up-to-date size of the entire display.
@@ -335,43 +339,9 @@ sDEBUG1 = "p:"+(a_motionevent.getPressure()+"     ").substring(0,6)
    }//if                                                                                        // .
 
    if(       p_bPanTouching   &&   id == p_idTouchPan ){                                        // If this is the (touching) pan finger, then
-    bPanSeen = true;                                                                            // remember we have seen the left finger in the list.                            [2013-06-28 davidwalley.ca BD68]
-    float                       dWasX_1                 = p_dTouchPanX_1;
-    float                       dWasY_1                 = p_dTouchPanY_1;
-    p_dTouchPanX_1 = (a_motionevent.getX(i) +p_nKeyAreaL_px) / p_dScreenW_px;                   // Calculate the new co-                            [2013-06-28 davidwalley.ca 97B7]
-    p_dTouchPanY_1 = (a_motionevent.getY(i) +p_nKeyAreaT_px) / p_dScreenH_px;                   // ordinates of the left finger.                            [2013-06-28 davidwalley.ca B9B1]
-    long                        took                    = -p_whenPan;
-    p_whenPan = System.currentTimeMillis();        took += p_whenPan;
-
-    if( 0 < took   &&   p_bPanTouching ){
-     p_dVelocityX += (p_dTouchPanX_1 - dWasX_1)/(float)took; p_dVelocityX *= 0.7f;
-     p_dVelocityY += (p_dTouchPanY_1 - dWasY_1)/(float)took; p_dVelocityY *= 0.7f;
-     if( p_whenCheckX <= p_whenPan ){
-      if(       p_dVelocityX < -9.e-5f ){
-       if( 0 == p_isPanWasX ){ p_iPanAtX = (p_iPanAtX + 2)%3; p_whenCheckX = p_whenPan + 500L; }
-       p_isPanWasX = -1;
-      }else if( 9.e-5f < p_dVelocityX  ){
-       if( 0 == p_isPanWasX ){ p_iPanAtX = (p_iPanAtX + 1)%3; p_whenCheckX = p_whenPan + 500L; }
-       p_isPanWasX =  1;
-      }else{
-       p_isPanWasX =  0;
-     }}//if p_dVelocityX//if p_whenCheckX
-
-     if( p_whenCheckY <= p_whenPan ){
-      if(       p_dVelocityY < -9.e-5f ){
-       if( 0 == p_isPanWasY ){ p_iPanAtY = (p_iPanAtY + 2)%3; p_whenCheckY = p_whenPan + 500L; }
-       p_isPanWasY = -1;
-      }else if( 9.e-5f < p_dVelocityY  ){
-       if( 0 == p_isPanWasY ){ p_iPanAtY = (p_iPanAtY + 1)%3; p_whenCheckY = p_whenPan + 500L; }
-       p_isPanWasY =  1;
-      }else{
-       p_isPanWasY =  0;
-    }}}//if p_dVelocityY//if p_whenCheckX//if 0 <
-sDEBUG2 = "v:"+(p_dVelocityX   +"     ").substring(0,6)
-          +" "+(p_dVelocityY   +"     ").substring(0,6);
-    sDEBUG3 = "at:"+p_iPanAtX   +"    "+ p_iPanAtY  ;
-    sDEBUG4 = "ws:"+p_isPanWasX +"    "+ p_isPanWasY;
-
+    bPanSeen = true;                                                                            // remember we have seen the right finger in the list.     [2013-06-28 davidwalley.ca BB2F]
+    dWasX_px = p_dTouchPanX_px; p_dTouchPanX_px = a_motionevent.getX(i);                                                 // Get the new co-                            [2013-06-28 davidwalley.ca 97B7]
+    dWasY_px = p_dTouchPanY_px; p_dTouchPanY_px = a_motionevent.getY(i);                                                   // ordinates of the left finger.                            [2013-06-28 davidwalley.ca B9B1]
    }else if( p_bKeyTouching   &&   id == p_idTouchKey ){                                        // If this is the (touching) right finger, then
     bKeySeen = true;                                                                            // remember we have seen the right finger in the list.     [2013-06-28 davidwalley.ca BB2F]
     p_dTouchKeyX_1 = (a_motionevent.getX(i) +p_nKeyAreaL_px) / p_dScreenW_px;                   // Calculate the new co-                                  [2013-06-28 davidwalley.ca 0BC3]
@@ -386,6 +356,50 @@ sDEBUG2 = "v:"+(p_dVelocityX   +"     ").substring(0,6)
   p_bKeyTouching = bKeySeen;                                                                    // Remember if the right finger is touching the screen.
 
   if(  p_bPanTouching ){                                                                        // If Pan finger is touching...
+    bPanSeen = true;                                                                            // remember we have seen the left finger in the list.                            [2013-06-28 davidwalley.ca BD68]
+    float                       took                    =
+        ( (float)(System.currentTimeMillis() - p_whenPan) )/100.f;
+    float                       dTRIGGERmAX             = 60.f;
+
+    if( 0 < took   &&   p_bPanTouching ){
+     p_whenPan = System.currentTimeMillis();
+     p_dSpeedX = (p_dTouchPanX_px - dWasX_px)/took;
+     p_dSpeedY = (p_dTouchPanY_px - dWasY_px)/took;
+//*///
+     if(        p_dSpeedX < -p_dTrigger ){  p_dTrigger = dTRIGGERmAX;
+      if(       p_dSpeedY < -p_dTrigger ){
+       if( p_dSpeedX <  p_dSpeedY ){  p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
+       else{                          p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // -
+      }else if( p_dTrigger < p_dSpeedY  ){
+       if( p_dSpeedX < -p_dSpeedY ){  p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
+       else{                          p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // +
+      }else{                          p_dPanAtX -= p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // -
+     }else if(  p_dTrigger < p_dSpeedX  ){  p_dTrigger = dTRIGGERmAX;
+      if(       p_dSpeedY < -p_dTrigger ){
+       if( p_dSpeedX < -p_dSpeedY ){  p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // -
+       else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
+      }else if( p_dTrigger < p_dSpeedY  ){
+       if( p_dSpeedX <  p_dSpeedY ){  p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger; } // +
+       else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
+      }else{                          p_dPanAtX += p_dSpeedX*p_dSpeedX*took/p_dTrigger; } // +
+     }else if(  p_dSpeedY < -p_dTrigger ){  p_dTrigger = dTRIGGERmAX;
+                                      p_dPanAtY -= p_dSpeedY*p_dSpeedY*took/p_dTrigger;   // -
+     }else if(  p_dTrigger < p_dSpeedY  ){  p_dTrigger = dTRIGGERmAX;
+                                      p_dPanAtY += p_dSpeedY*p_dSpeedY*took/p_dTrigger;   // +
+     }else{
+      p_dTrigger *= Math.exp(-.1f*took); if( p_dTrigger < 2.f ){ p_dTrigger = 2.f; }
+     }//if
+//*///
+
+
+     Log.d( "raw",","+ p_whenPan +", "+ p_dTrigger +", "+ p_dSpeedX +", "+ p_dSpeedY  +", "+ p_dPanAtX  +", "+ p_dPanAtY );
+    }//if 0 <
+
+sDEBUG2 = "v:" +(p_dSpeedX   +"     ").substring(0,6)
+          +" " +(p_dSpeedY   +"     ").substring(0,6);
+sDEBUG3 = "at:"+(p_dPanAtX   +"     ").substring(0,6)
+          +" " +(p_dPanAtY   +"     ").substring(0,6);
+
    if( ! p_bKeyTouching ){                                                                      // but Key finger is not, then
     if( bNewSeen ){                                                                             // but a new touch-point was seen, then PAN key is returning, so...
      p_bKeyTouching = true; p_idTouchKey = idNew;                                               // Assign the new touch-point to the KEY finger
@@ -395,8 +409,8 @@ sDEBUG2 = "v:"+(p_dVelocityX   +"     ").substring(0,6)
   }else{                                                                                        // But if the PAN key was not touching,
    if( bNewSeen ){                                                                             // If a new touch-point was seen, then
     p_bPanTouching = true; p_idTouchPan = idNew;                                               // Assign the new touch-point to the PAN finger
-    p_dTouchPanX_1 = dNewX_1; p_dTouchPanY_1 = dNewY_1;                                        // and remember its position.
-    p_bRightHanded = ( p_dTouchPanX_1 < 0.5f );                                                // FIRST TOUCH. Remember if left or right handed
+    p_dTouchPanX_px = dNewX_1; p_dTouchPanY_px = dNewY_1;                                        // and remember its position.
+    p_bRightHanded = ( p_dTouchPanX_px < 0.5f );                                                // FIRST TOUCH. Remember if left or right handed
    }//if
   }//if                                                                                    // .
                                                                                                 //

@@ -16,13 +16,10 @@ public final class R {
         public static final int ic_launcher=0x7f020002;
     }
     public static final class id {
-        public static final int ButtonPopup=0x7f070002;
-        public static final int MyLinearLayout=0x7f070001;
         public static final int keyboard=0x7f070000;
     }
     public static final class layout {
         public static final int input=0x7f030000;
-        public static final int popup=0x7f030001;
     }
     public static final class string {
         public static final int ime_name=0x7f050000;
